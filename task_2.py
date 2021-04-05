@@ -4,15 +4,8 @@
 элементов необходимо использовать функцию input().
 """
 
-my_list_even = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-my_list_odd = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+my_list = input(f'Введите список элементов через пробел: ').split()
 
-# Словарь с четным количеством элементов
-for i in range(0, len(my_list_even), 2):
-    my_list_even[i], my_list_even[i + 1] = my_list_even[i + 1], my_list_even[i]
-print(my_list_even)
-
-# Словарь с нечетным количеством элементов
-for i in range(1, len(my_list_odd), 2):
-    my_list_odd[i - 1], my_list_odd[i] = my_list_odd[i], my_list_odd[i - 1]
-print(my_list_odd)
+for i in range(1, len(my_list), 2):
+    my_list[i - 1], my_list[i] = my_list[i], my_list[i - 1]
+print(my_list)
