@@ -18,5 +18,5 @@ def int_func(user_string):
         return 'String must include only lowercase characters!'
 
 
-# print(int_func('nice авп ъghj jапро hjjпаро вапрghgh cool'))
+print(int_func('nice авп ъghj jапро hjjпаро вапрghgh cool'))
 print(int_func(input('Input some words: ')))

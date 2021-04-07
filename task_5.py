@@ -14,11 +14,11 @@ def sum_numbers():
         if 'q' in new_nums:
             new_nums.remove('q')
             result += sum(map(float, new_nums))
-            return result
+            return f'Result sum is {result}'
         else:
             current_sum = sum(map(float, new_nums))
             result += current_sum
-            print(f'Current sum is {current_sum}, result sum is {result}')
+            print(f'Current sum is {current_sum}, result sum is {result}\n')
 
 
 print(sum_numbers())

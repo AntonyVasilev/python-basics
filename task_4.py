@@ -7,7 +7,7 @@
 """
 
 
-def my_func(x: float, y: int):
+def my_func_1(x, y):
     if x > 0 and y < 0 and str(abs(y)).isdigit():
         result = 1
         for i in range(abs(y)):
@@ -17,4 +17,14 @@ def my_func(x: float, y: int):
         return 'Wrong arguments. X must be positive and Y must be negative & integer!'
 
 
-print(my_func(2.55, -4))
+def my_func_2(x, y):
+    if x > 0 and y < 0 and str(abs(y)).isdigit():
+        return x ** y
+    else:
+        return 'Wrong arguments. X must be positive and Y must be negative & integer!'
+
+
+number = float(input('Input a number: '))
+degree = int(input('Input negative degree: '))
+print(my_func_1(number, degree))
+print(my_func_2(number, degree))
