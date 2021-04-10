@@ -8,33 +8,11 @@
 необходимо предусмотреть условие, при котором повторение элементов списка будет прекращено.
 """
 
-from itertools import count, cycle, repeat
+from itertools import count, cycle, islice
 
+start_num = 5
+num_iterations = 15
+iter_str = 'python'
 
-def nums_iterator(start_num, num_iterations):
-    i = 0
-    for el in count(start_num):
-        if i < num_iterations:
-            yield el
-            i += 1
-        else:
-            return el
-
-
-def elements_repeater(repeat_list, num_iterations):
-    i = 0
-    for el in cycle(repeat_list):
-        if i < num_iterations:
-            yield el
-            i += 1
-        else:
-            return el
-
-
-for num in nums_iterator(5, 7):
-    print(num)
-
-print('\n', '*' * 20, '\n')
-
-for char in elements_repeater('python', 10):
-    print(char)
+for num, char in islice(zip(count(start_num, 3), cycle(iter_str)), num_iterations):
+    print(f'{num}\t{char}')
