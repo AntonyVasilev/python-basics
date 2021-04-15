@@ -13,10 +13,11 @@ from translate import Translator
 
 translator = Translator(to_lang='Russian')
 
+# Использую файл из архива
 with open('text_4_result.txt', 'w', encoding='utf-8') as f_res:
     with open('text_4.txt', 'r', encoding='utf-8') as f:
         for row in f:
-            f_res.writelines(f"{translator.translate(row.split(' - ')[0])} - {row.split(' - ')[1]}")
+            f_res.write(f"{translator.translate(row.split(' - ')[0])} - {row.split(' - ')[1]}")
 
 
 # Вариант перевода через словарь. При таком объеме данных работает намного быстрее, чем модуль translate.

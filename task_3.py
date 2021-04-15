@@ -4,8 +4,9 @@
 сотрудников.
 """
 
+# Использую файл из архива
 with open('text_3.txt', 'r', encoding='utf-8') as f:
     salaries = {row.split()[0]: float(row.split()[1]) for row in f}
 
-print(f'Mean salary is {sum(salaries.values()) / len(salaries)}')
-print(f'Employees with salary below 20000: {[surname for surname, salary in salaries.items() if salary < 20000]}')
+print(f'Mean salary equals {sum(salaries.values()) / len(salaries)}')
+print(f'Employees with the salary below 20000: {[surname for surname, salary in salaries.items() if salary < 20000]}')

@@ -13,6 +13,7 @@
 """
 import json
 
+# Использую файл из архива
 with open('text_7.txt', 'r', encoding='utf-8') as f:
     companies = {row.split()[0]: float(row.split()[2]) - float(row.split()[3]) for row in f}
 

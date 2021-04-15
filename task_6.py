@@ -15,6 +15,7 @@
 
 result_dict = {}
 
+# Использую файл из архива
 with open('text_6.txt', 'r', encoding='utf-8') as f:
     for row in f:
         subject, values = row.split(':')
