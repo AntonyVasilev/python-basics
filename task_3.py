@@ -49,8 +49,8 @@ class Cell:
                         for i in range(1, self.n_cells + 1)])
 
 
-cell_1 = Cell(13)
-cell_2 = Cell(5)
+cell_1 = Cell(16)
+cell_2 = Cell(7)
 
 cell_3 = cell_1 + cell_2
 print(f'Сумма клеток: {cell_3.n_cells}')

@@ -33,9 +33,9 @@ class Matrix:
     def __add__(self, other):
         assert self.shape == other.shape, 'Размеры матриц не совпадают! Сложение невозможно!!!'
         result_matrix = []
-        for i in range(len(self.matrix)):
+        for i in range(self.shape[0]):
             new_row = []
-            for j in range(len(self.matrix[0])):
+            for j in range(self.shape[1]):
                 new_row.append(self.matrix[i][j] + other.matrix[i][j])
             result_matrix.append(new_row)
         return Matrix(result_matrix)
