@@ -9,10 +9,10 @@
 классы для основных классов проекта, проверить на практике работу декоратора @property.
 """
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Clothes:
+class Clothes(ABC):
 
     @abstractmethod
     def cloth_count(self):
