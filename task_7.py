@@ -14,13 +14,10 @@ class ComplexNumbers:
 
     @staticmethod
     def split_number(number):
-        num = findall(r'[1-9]+', number)
-        # Если мнимое число равно 1 и записано как i, добавляю 1 в список
+        num = findall(r'\-?[1-9]+', number)
+        # Если мнимое число равно 1 или -1 и записано как +-i, то добавляю 1/-1 в список
         if len(num) == 1:
-            num.append('1')
-        # Добавляю знак "-" если он стоит перед мнимым числом
-        if '-' in number[1:]:
-            num[1] = f'-{num[1]}'
+            num.append('1') if '+' in number else num.append('-1')
         try:
             x, y = map(int, num)
         except ValueError:
@@ -46,7 +43,7 @@ class ComplexNumbers:
         return ComplexNumbers(f'{x}+{y}i') if y >= 0 else ComplexNumbers(f'{x}{y}i')
 
 
-c_num_1 = ComplexNumbers('3+i')
-c_num_2 = ComplexNumbers('2+3i')
+c_num_1 = ComplexNumbers('-5+i')
+c_num_2 = ComplexNumbers('2-3i')
 print(c_num_1 + c_num_2)
 print(c_num_1 * c_num_2)
