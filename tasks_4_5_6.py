@@ -167,13 +167,11 @@ def create_warehouse() -> list:
         email = input('Введите email: ')
         if '@' not in email:
             raise MyException('Не корректный ввод email!')
-        n_rows = int(input('Введите количество рядов стеллажей: '))
-        n_levels = int(input('Введите количество уровней хранения: '))
         n_cells = int(input('Введите количество ячеек хранения: '))
     except (MyException, ValueError) as error:
         print(error)
     else:
-        return [name, address, phone, email, n_rows, n_levels, n_cells]
+        return [name, address, phone, email, n_cells]
 
 
 def create_product(product_type: int):
@@ -205,7 +203,7 @@ if __name__ == '__main__':
     # Создание экземпляра объекта Склад
     wh_data = create_warehouse()
     try:
-        wh = Warehouse(wh_data[0], wh_data[1], wh_data[2], wh_data[3], wh_data[4], wh_data[5], wh_data[6])
+        wh = Warehouse(wh_data[0], wh_data[1], wh_data[2], wh_data[3], wh_data[4])
     except TypeError as err:
         print(err)
     else:
