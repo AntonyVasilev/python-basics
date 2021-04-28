@@ -39,28 +39,73 @@ class Warehouse:
         self.email = email
         self.n_cells = n_cells
 
-    def receipt(self, product, prod_quantity, prod_price, cell_num):
+    @staticmethod
+    def _create_product(product_type: int):
         """
-        Метод, добавляющий товар на склад
-        :param product: экземпляр класса Огртехника
+        Запрашивает у пользователя данные и возвращает экземпляр класса-наследника класса Оргтехника
+        :param product_type: тип класса Оргтехника: 1 - принтер, 2 - сканер, 3 - копир
+        :return: экземпляр класса-наследника класса Оргтехника
+        """
+        print()
+        while True:
+            try:
+                name = input('Введите наименование устройства: ')
+                weight = float(input('Введите вес устройства: '))
+                dimensions = input('Введите размеры устройства: ')
+                paper_format = input('Введите поддерживаемые форматы документов: ')
+                connections = input('Введите поддерживаемые типы подключения: ')
+                if product_type == 1:
+                    print_speed = float(input('Введите скорость печати (листов в минуту): '))
+                    maximum_load = int(input('Введите максимальную нагрузку (страниц в месяц): '))
+                    return Printer(name, weight, dimensions, paper_format, connections, print_speed, maximum_load)
+                elif product_type == 2:
+                    scanner_type = input('Введите тип сканера: ')
+                    scan_speed = float(input('Введите скорость сканирования (страниц в минуту): '))
+                    return Scanner(name, weight, dimensions, paper_format, connections, scanner_type, scan_speed)
+                elif product_type == 3:
+                    copier_type = input('Введите тип копира: ')
+                    copy_speed = float(input('Введите скорость копирования (страниц в минуту): '))
+                    return Copier(name, weight, dimensions, paper_format, connections, copier_type, copy_speed)
+            except ValueError as error:
+                print(error)
+
+    def receipt(self, product_type, product=None, prod_quantity=None, prod_price=None, cell_num=None):
+        """
+        Метод, добавляющий товар на склад. По-умолчанию параметры prod_quantity, prod_price и new_sell_num
+        запрашиваются у пользователя напрямую в методе, но при необходимости можно передать их при вызове метода.
+        :param product_type: тип класса Оргтехника: 1 - принтер, 2 - сканер, 3 - копир
+        :param product: экземпляр класса Оргтехника
         :param prod_quantity: количество
         :param prod_price: цена
         :param cell_num: номер ячейки, в которой будет хранится данный товар
         """
-        if cell_num not in self.goods.keys():
-            self.goods[cell_num] = {
-                'product': product,
-                'quantity': prod_quantity,
-                'price': prod_price}
-        else:
-            print(f'Данная ячейка занята!\nСписок занятых ячеек:{list(self.goods.keys())}')
-            try:
-                new_sell_num = int(input('Введите номер ячейки: '))
-            except ValueError as error:
-                print(error)
-                return
+        if len(self.goods.keys()) < self.n_cells:
+            if product is None:
+                product = self._create_product(product_type)
+            if prod_quantity is None:
+                prod_quantity = int(input('Введите количество: '))
+            if prod_price is None:
+                prod_price = float(input('Введите стоимость: '))
+            if cell_num is None:
+                cell_num = int(input('Введите номер ячейки: '))
+            if cell_num not in self.goods.keys():
+                self.goods[cell_num] = {
+                    'product': product,
+                    'quantity': prod_quantity,
+                    'price': prod_price}
+                # Дополнительная проверка, чтобы предупредить пользователя, что он занял последнюю свободную ячейку
+                if len(self.goods.keys()) == self.n_cells:
+                    print('На складе не осталось свободных ячеек!')
             else:
-                self.receipt(product, prod_quantity, prod_price, new_sell_num)
+                print(f'Данная ячейка занята!\nСписок занятых ячеек:{list(self.goods.keys())}')
+                try:
+                    new_sell_num = int(input('Введите номер ячейки: '))
+                except ValueError as error:
+                    print(error)
+                else:
+                    self.receipt(product_type, product, prod_quantity, prod_price, new_sell_num)
+        else:
+            print('Все ячейки заняты, добавление не возможно!')
 
     def issue(self, cell_num, prod_quantity):
         """
@@ -69,17 +114,32 @@ class Warehouse:
         :param cell_num: номер ячейки хранения
         :param prod_quantity: количество передаваемого товара
         """
-        if self.goods[cell_num]['quantity'] > prod_quantity:
-            self.goods[cell_num]['quantity'] -= prod_quantity
-        elif self.goods[cell_num]['quantity'] == prod_quantity:
-            self.goods.pop(cell_num)
+        if cell_num in self.goods.keys():
+            if self.goods[cell_num]['quantity'] > prod_quantity:
+                self.goods[cell_num]['quantity'] -= prod_quantity
+            elif self.goods[cell_num]['quantity'] == prod_quantity:
+                self.goods.pop(cell_num)
+            else:
+                print(f'Не достаточное количество товара {self.goods[cell_num]["product"].name} в ячейке '
+                      f'{cell_num}. Отпуск товара невозможен!\nТекущий остаток: '
+                      f'{self.goods[cell_num]["quantity"]}')
         else:
-            print(f'Не достаточное количество товара {self.goods[cell_num]["product"].name} в ячейке '
-                  f'{cell_num}. Отпуск товара невозможен!\nТекущий остаток: '
-                  f'{self.goods[cell_num]["quantity"]}')
+            print(f'Данная ячейка пустая. Список занятых ячеек: {list(self.goods.keys())}')
+            try:
+                new_cell_num = int(input('Введите номер ячейки или 0 для отмены: '))
+            except ValueError as error:
+                print(error)
+            else:
+                if new_cell_num == 0:
+                    return
+                else:
+                    self.issue(new_cell_num, prod_quantity)
 
     def _warehouse_balances(self):
-        used_cells = self.goods.keys()
+        """
+        Формирует словарь с товарами, хранящимися на складе
+        :return: список со словарями,
+        """
         report_list = []
         for cell_num, product in self.goods.items():
             report_dict = {
@@ -88,15 +148,40 @@ class Warehouse:
                 'quantity': product['quantity'],
                 'price': product['price']}
             report_list.append(report_dict)
-        return report_list, len(used_cells)
+        return report_list
 
     def get_warehouse_balances(self):
-        report, used_cells = self._warehouse_balances()
-        print(f'\nКоличество занятых ячеек: {used_cells}')
-        print(f'Количество свободных ячейки: {self.n_cells - used_cells}')
+        """
+        Выводит в терминал отчет об остатках товаров на складе
+        """
+        report = self._warehouse_balances()
+        print(f'\nКоличество занятых ячеек: {len(self.goods.keys())}')
+        print(f'Количество свободных ячеек: {self.n_cells - len(self.goods.keys())}')
         for product in report:
             print(f'Номер ячейки: {product["cell_num"]}, наименование: {product["product_name"]}, '
                   f'количество: {product["quantity"]}, цена: {product["price"]}')
+
+    @classmethod
+    def create_warehouse(cls):
+        """
+        Создает экземпляр класса Warehouse
+        :return: экземпляр класса
+        """
+        name = input('Введите название склада: ')
+        address = input('Введите адрес склада: ')
+        try:
+            phone = input('Введите номер телефона(только цифры): ')
+            if len(phone) < 10 and not phone.isnumeric():
+                raise MyException('Не корректный ввод номера телефона!')
+            email = input('Введите email: ')
+            if '@' not in email:
+                raise MyException('Не корректный ввод email!')
+            n_cells = int(input('Введите количество ячеек хранения: '))
+        except (MyException, ValueError) as error:
+            print(error)
+            return
+        else:
+            return cls(name, address, phone, email, n_cells)
 
 
 class OfficeEquipment(ABC):
@@ -157,84 +242,36 @@ class Copier(OfficeEquipment):
         self.copy_speed = copy_speed
 
 
-def create_warehouse() -> list:
-    name = input('Введите название склада: ')
-    address = input('Введите адрес склада: ')
-    try:
-        phone = input('Введите номер телефона(только цифры): ')
-        if len(phone) < 10 and not phone.isalpha():
-            raise MyException('Не корректный ввод номера телефона!')
-        email = input('Введите email: ')
-        if '@' not in email:
-            raise MyException('Не корректный ввод email!')
-        n_cells = int(input('Введите количество ячеек хранения: '))
-    except (MyException, ValueError) as error:
-        print(error)
-    else:
-        return [name, address, phone, email, n_cells]
-
-
-def create_product(product_type: int):
-    print()
-    while True:
-        try:
-            name = input('Введите наименование устройства: ')
-            weight = float(input('Введите вес устройства: '))
-            dimensions = input('Введите размеры устройства: ')
-            paper_format = input('Введите поддерживаемые форматы документов: ')
-            connections = input('Введите поддерживаемые типы подключения: ')
-            if product_type == 1:
-                print_speed = float(input('Введите скорость печати (листов в минуту): '))
-                maximum_load = int(input('Введите максимальную нагрузку (страниц в месяц): '))
-                return Printer(name, weight, dimensions, paper_format, connections, print_speed, maximum_load)
-            elif product_type == 2:
-                scanner_type = input('Введите тип сканера: ')
-                scan_speed = float(input('Введите скорость сканирования (страниц в минуту): '))
-                return Scanner(name, weight, dimensions, paper_format, connections, scanner_type, scan_speed)
-            elif product_type == 3:
-                copier_type = input('Введите тип копира: ')
-                copy_speed = float(input('Введите скорость копирования (страниц в минуту): '))
-                return Copier(name, weight, dimensions, paper_format, connections, copier_type, copy_speed)
-        except ValueError as error:
-            print(error)
-
-
-if __name__ == '__main__':
+def start():
+    """
+    Функция, выполняющая программу
+    """
     # Создание экземпляра объекта Склад
-    wh_data = create_warehouse()
-    try:
-        wh = Warehouse(wh_data[0], wh_data[1], wh_data[2], wh_data[3], wh_data[4])
-    except TypeError as err:
-        print(err)
+    wh = Warehouse.create_warehouse()
+    if wh is None:
+        return
+
     else:
         while True:
             print('\nМеню:\n0. Выход\n1. Добавить товар на склад\n2. Передать товар со склада\n3. Вывести отчет')
-            try:
-                user_choice = int(input('Выберите действие: '))
-            except ValueError:
-                print('Ошибка ввода!')
-                continue
+            user_choice = input('Выберите действие: ')
 
-            if user_choice == 0:
-                break
-            elif user_choice == 1:
+            if user_choice == '0':
+                return
+            elif user_choice == '1':
                 try:
                     print('\nВид товара:\n0. Назад\n1. Принтер\n2. Сканер\n3. Копир')
                     product_num = int(input('Введите вид товара: '))
-                    if product_num == 0:
-                        continue
                     if product_num < 0 or product_num >= 4:
                         raise MyException('Ошибка ввода! Такого товара не существует!')
-                    new_product = create_product(product_num)
-                    quantity = int(input('Введите количество: '))
-                    price = float(input('Введите стоимость: '))
-                    cell_number = int(input('Введите номер ячейки: '))
                 except (ValueError, MyException) as err1:
                     print(err1)
                     continue
                 else:
-                    wh.receipt(new_product, quantity, price, cell_number)
-            elif user_choice == 2:
+                    if product_num == 0:
+                        continue
+                    wh.receipt(product_num)
+            elif user_choice == '2':
                 try:
                     cell_number = int(input('Введите номер ячейки: '))
                     quantity = int(input('Введите количество: '))
@@ -242,7 +279,11 @@ if __name__ == '__main__':
                     print(err2)
                 else:
                     wh.issue(cell_number, quantity)
-            elif user_choice == 3:
+            elif user_choice == '3':
                 wh.get_warehouse_balances()
             else:
                 print('Такого действия нет!')
+
+
+if __name__ == '__main__':
+    start()
